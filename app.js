@@ -124,7 +124,7 @@ function logoMarkup() {
     return `<div class="mock-logo text-logo">BM</div>`;
   }
 
-  return `<img class="mock-logo" src="${logoImage.url}" alt="${escapeHTML(logoImage.name)}" />`;
+  return `<img class="mock-logo" src="${logoImage.src}" alt="${escapeHTML(logoImage.name)}" />`;
 }
 
 function generateMockups(input) {
@@ -300,25 +300,30 @@ function previewImages(files) {
 }
 
 function previewLogo(file) {
-  if (logoImage) {
-    URL.revokeObjectURL(logoImage.url);
-  }
-
   if (!file) {
     logoImage = null;
     logoPreview.className = "logo-preview empty";
     logoPreview.textContent = "LOGO";
+    generateMockups(getBrandInput());
     return;
   }
 
-  logoImage = {
-    name: file.name,
-    url: URL.createObjectURL(file),
-  };
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    logoImage = {
+      name: file.name,
+      src: reader.result,
+    };
 
-  logoPreview.className = "logo-preview";
-  logoPreview.innerHTML = `<img src="${logoImage.url}" alt="${escapeHTML(logoImage.name)}" />`;
-  showToast("로고를 적용했습니다.");
+    logoPreview.className = "logo-preview";
+    logoPreview.innerHTML = `<img src="${logoImage.src}" alt="${escapeHTML(logoImage.name)}" />`;
+    generateMockups(getBrandInput());
+    showToast("로고를 시안에 적용했습니다.");
+  });
+  reader.addEventListener("error", () => {
+    showToast("로고 파일을 읽지 못했습니다. 다른 이미지 파일로 다시 시도해주세요.");
+  });
+  reader.readAsDataURL(file);
 }
 
 function collectResultText() {
@@ -399,9 +404,6 @@ resetButton.addEventListener("click", () => {
     card.classList.toggle("selected", [0, 1, 2, 3].includes(index));
   });
 
-  if (logoImage) {
-    URL.revokeObjectURL(logoImage.url);
-  }
   uploadedImages.forEach((image) => URL.revokeObjectURL(image.url));
   logoImage = null;
   uploadedImages = [];
