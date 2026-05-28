@@ -622,10 +622,157 @@ textarea:focus {
 .mock-card-ticket,
 .mock-banner-wide,
 .mock-leaflet,
-.mock-social-post {
+.mock-social-post,
+.mock-premium-poster {
   position: relative;
   z-index: 1;
   min-height: 170px;
+}
+
+.mock-premium-poster {
+  display: grid;
+  min-height: 410px;
+  overflow: hidden;
+  border: 1px solid rgba(48, 50, 54, 0.12);
+  border-radius: 8px;
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.94), rgba(243, 237, 229, 0.74)),
+    #f7f1ea;
+  padding: 22px 20px 18px;
+  box-shadow: 0 22px 42px rgba(39, 35, 26, 0.14);
+}
+
+.poster-light {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 58% 24%, rgba(255, 255, 255, 0.96), transparent 28%),
+    linear-gradient(125deg, rgba(255, 255, 255, 0.4), transparent 38% 70%, rgba(48, 50, 54, 0.18));
+}
+
+.poster-leaf-shadow {
+  position: absolute;
+  left: -42px;
+  top: -20px;
+  width: 190px;
+  height: 310px;
+  opacity: 0.22;
+  filter: blur(9px);
+  background:
+    radial-gradient(ellipse at 20% 12%, rgba(48, 50, 54, 0.55) 0 12%, transparent 13%),
+    radial-gradient(ellipse at 58% 28%, rgba(48, 50, 54, 0.5) 0 14%, transparent 15%),
+    radial-gradient(ellipse at 30% 52%, rgba(48, 50, 54, 0.52) 0 15%, transparent 16%),
+    radial-gradient(ellipse at 70% 68%, rgba(48, 50, 54, 0.42) 0 13%, transparent 14%);
+}
+
+.mock-premium-poster header {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+}
+
+.mock-premium-poster header .mock-logo {
+  max-width: 76px;
+  max-height: 76px;
+}
+
+.poster-headline {
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+  max-width: 310px;
+  color: #111;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 0.94;
+  text-align: center;
+}
+
+.mock-premium-poster > p {
+  position: relative;
+  z-index: 1;
+  max-width: 260px;
+  justify-self: center;
+  margin: 16px 0 14px;
+  color: var(--charcoal);
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.poster-hero {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: 150px;
+  place-items: end center;
+  margin-top: auto;
+  border-radius: 8px;
+  background:
+    linear-gradient(165deg, transparent 0 38%, rgba(255, 255, 255, 0.64) 39% 67%, rgba(48, 50, 54, 0.16) 68%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.5), rgba(199, 154, 59, 0.12));
+}
+
+.poster-hero::after {
+  content: "";
+  position: absolute;
+  bottom: 12px;
+  width: 170px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(48, 50, 54, 0.2);
+  filter: blur(8px);
+}
+
+.poster-product-image {
+  position: relative;
+  z-index: 1;
+  display: block;
+  max-width: 190px;
+  max-height: 150px;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 18px rgba(39, 35, 26, 0.24));
+}
+
+.poster-product-placeholder {
+  position: relative;
+  z-index: 1;
+  width: 92px;
+  height: 142px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 12px 12px 20px 20px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.75), transparent 16%),
+    linear-gradient(180deg, rgba(183, 102, 76, 0.82), rgba(48, 20, 12, 0.94));
+  box-shadow:
+    inset 0 0 18px rgba(255, 255, 255, 0.34),
+    0 18px 18px rgba(39, 35, 26, 0.24);
+}
+
+.poster-product-placeholder span {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 22px;
+  height: 24px;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+}
+
+.mock-premium-poster footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 14px;
+  color: var(--terracotta);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .mock-sticker-sheet {
@@ -1026,6 +1173,27 @@ textarea:focus {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
+}
+
+.ai-handoff {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 16px;
+}
+
+.ai-handoff a {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  border: 1px solid rgba(183, 102, 76, 0.32);
+  border-radius: 8px;
+  background: rgba(183, 102, 76, 0.08);
+  color: var(--terracotta);
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 900;
+  text-decoration: none;
 }
 
 .social-image {

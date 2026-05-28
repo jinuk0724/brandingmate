@@ -145,11 +145,12 @@ function categorySummary(goals) {
 }
 
 function createMockup(goal, index, input) {
-  const fallbackLayouts = ["review", "guide", "sticker", "social", "banner", "tag"];
+  const fallbackLayouts = ["poster", "review", "guide", "sticker", "social", "banner", "tag"];
   const layout = goal?.layout || fallbackLayouts[index % fallbackLayouts.length];
-  const title = goal?.title || ["리뷰 요청 카드", "객실 안내문", "스티커", "SNS 포스트", "이벤트 배너", "패키지 태그"][index];
+  const title = goal?.title || ["AI 포스터", "리뷰 요청 카드", "객실 안내문", "스티커", "SNS 포스트", "이벤트 배너", "패키지 태그"][index];
   const category = goal?.category || "추천";
   const copyByLayout = {
+    poster: "사진, 조명, 로고, 타이포그래피를 결합한 완성형 홍보 포스터.",
     sticker: "좋은 시간은 오래 남습니다.",
     postcard: `${input.mood}에서 쉬어가는 작은 기록.`,
     keyring: "작게 지니는 브랜드의 순간.",
@@ -177,6 +178,25 @@ function mockupVisual(layout, logo, title, body, input) {
   const safeTitle = escapeHTML(title);
   const safeBody = escapeHTML(body);
   const safeName = escapeHTML(input.name);
+  const heroImage = uploadedImages[0]?.url;
+
+  if (layout === "poster") {
+    const productVisual = heroImage
+      ? `<img class="poster-product-image" src="${heroImage}" alt="${escapeHTML(uploadedImages[0].name)}" />`
+      : `<div class="poster-product-placeholder"><span></span></div>`;
+
+    return `
+      <div class="mock-premium-poster">
+        <div class="poster-light"></div>
+        <div class="poster-leaf-shadow"></div>
+        <header>${logo}</header>
+        <strong class="poster-headline">Signature<br />Moment</strong>
+        <p>브랜드가 기억되는 한 장면을 만듭니다.</p>
+        <div class="poster-hero">${productVisual}</div>
+        <footer>${safeName}</footer>
+      </div>
+    `;
+  }
 
   if (layout === "sticker") {
     return `
@@ -367,6 +387,9 @@ function generateImagePrompt(input) {
   const imageContext = logoImage
     ? "업로드한 로고를 상단 또는 하단 여백에 자연스럽게 배치한다."
     : "브랜드 로고가 들어갈 여백을 남긴다.";
+  const referenceContext = uploadedImages.length
+    ? `참고 이미지 ${uploadedImages.length}장을 제품, 공간, 질감, 조명 방향의 기준으로 사용한다.`
+    : "제품 또는 공간 사진이 없다면 고급 호텔/로컬 브랜드 홍보 사진을 새로 구성한다.";
   const name = escapeHTML(input.name);
   const safeGoals = escapeHTML(goals);
   const type = escapeHTML(input.type);
@@ -374,13 +397,17 @@ function generateImagePrompt(input) {
   const audience = escapeHTML(input.audience);
 
   return `
-    <p><strong>이미지 생성 프롬프트</strong></p>
-    <p>${name}의 ${safeGoals}용 마케팅 이미지. ${type} 브랜드이며 분위기는 ${mood}. 주요 고객은 ${audience}. ${imageContext} 따뜻하지만 과하지 않은 상업용 디자인, 읽기 쉬운 한글 타이포그래피 영역, 실제 홍보물로 사용할 수 있는 균형 잡힌 레이아웃.</p>
+    <p><strong>ChatGPT / Gemini 제작용 프롬프트</strong></p>
+    <p>${name}의 ${safeGoals}용 프리미엄 마케팅 비주얼을 제작한다. ${type} 브랜드이며 분위기는 ${mood}. 주요 고객은 ${audience}. ${imageContext} ${referenceContext} 결과물은 실제 브랜드 캠페인에 쓸 수 있는 완성형 포스터 수준이어야 한다. 자연광, 부드러운 그림자, 고급스러운 여백, 선명한 제품/공간 사진, 세련된 영문 대형 타이포그래피와 간결한 한글 보조 문구를 사용한다. 로고는 왜곡하지 말고 브랜드 컬러와 어울리게 배치한다. 저가 템플릿 느낌, 과한 장식, 작은 박스형 목업, 읽기 어려운 글자는 피한다.</p>
+    <div class="ai-handoff">
+      <a href="https://chatgpt.com/" target="_blank" rel="noreferrer">ChatGPT에서 만들기</a>
+      <a href="https://gemini.google.com/" target="_blank" rel="noreferrer">Gemini에서 만들기</a>
+    </div>
     <p><strong>수정 요청 예시</strong></p>
     ${renderList([
-      "로고가 들어갈 상단 여백을 더 넓혀줘.",
-      "리뷰 이벤트 문구가 잘 보이도록 대비를 높여줘.",
-      "객실 안내문 느낌으로 더 차분하고 정돈되게 바꿔줘.",
+      "첨부한 포스터처럼 큰 영문 헤드라인, 실제 제품 사진, 자연광 그림자를 중심으로 다시 만들어줘.",
+      "로고는 상단 중앙에 작고 고급스럽게 배치하고, 제품에는 작은 화이트 로고만 넣어줘.",
+      "저가 템플릿 느낌을 줄이고 호텔 브랜드 광고처럼 여백과 조명을 더 고급스럽게 만들어줘.",
     ])}
   `;
 }
@@ -531,7 +558,7 @@ resetButton.addEventListener("click", () => {
   });
 
   document.querySelectorAll(".goal-card").forEach((card, index) => {
-    card.classList.toggle("selected", ["sticker", "guide", "review", "social"].includes(card.dataset.layout));
+    card.classList.toggle("selected", ["sticker", "guide", "review", "poster", "social"].includes(card.dataset.layout));
   });
 
   uploadedImages.forEach((image) => URL.revokeObjectURL(image.url));
