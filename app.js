@@ -83,9 +83,12 @@ function updateStep(step) {
 }
 
 function getSelectedGoals() {
-  return [...document.querySelectorAll(".goal-card.selected")].map((card) =>
-    card.querySelector("strong").textContent.trim(),
-  );
+  return [...document.querySelectorAll(".goal-card.selected")].map((card) => ({
+    category: card.dataset.category,
+    layout: card.dataset.layout,
+    title: card.querySelector("strong").textContent.trim(),
+    note: card.querySelector("span").textContent.trim(),
+  }));
 }
 
 function getBrandInput() {
@@ -127,57 +130,161 @@ function logoMarkup() {
   return `<img class="mock-logo" src="${logoImage.src}" alt="${escapeHTML(logoImage.name)}" />`;
 }
 
+function goalTitles(goals) {
+  return goals.map((goal) => goal.title);
+}
+
+function categorySummary(goals) {
+  const grouped = goals.reduce((acc, goal) => {
+    acc[goal.category] = acc[goal.category] || [];
+    acc[goal.category].push(goal.title);
+    return acc;
+  }, {});
+
+  return Object.entries(grouped).map(([category, titles]) => `${category}: ${titles.join(", ")}`);
+}
+
+function createMockup(goal, index, input) {
+  const fallbackLayouts = ["review", "guide", "sticker", "social", "banner", "tag"];
+  const layout = goal?.layout || fallbackLayouts[index % fallbackLayouts.length];
+  const title = goal?.title || ["리뷰 요청 카드", "객실 안내문", "스티커", "SNS 포스트", "이벤트 배너", "패키지 태그"][index];
+  const category = goal?.category || "추천";
+  const copyByLayout = {
+    sticker: "좋은 시간은 오래 남습니다.",
+    postcard: `${input.mood}에서 쉬어가는 작은 기록.`,
+    keyring: "작게 지니는 브랜드의 순간.",
+    mug: "매일의 시작에 브랜드 감성을 더합니다.",
+    guide: `${input.name}을 찾아주셔서 감사합니다. 편안한 이용을 위해 안내드립니다.`,
+    notice: "조용한 이용을 부탁드리며 필요한 내용을 정리했습니다.",
+    review: "오늘의 시간이 좋았다면 짧은 리뷰를 남겨주세요.",
+    menu: "이곳에서 누릴 수 있는 서비스를 한눈에 안내합니다.",
+    social: `${input.mood}을 느낄 수 있는 ${input.name}.`,
+    banner: "리뷰 인증 시 다음 방문 혜택을 드립니다.",
+    leaflet: "방문 전 알아두면 좋은 매력을 접지형으로 소개합니다.",
+    coupon: "다음 방문을 위한 작은 혜택을 준비했습니다.",
+    tag: input.strengths,
+  };
+
+  return {
+    type: category,
+    title,
+    body: copyByLayout[layout] || copyByLayout.tag,
+    layout,
+  };
+}
+
+function mockupVisual(layout, logo, title, body, input) {
+  const safeTitle = escapeHTML(title);
+  const safeBody = escapeHTML(body);
+  const safeName = escapeHTML(input.name);
+
+  if (layout === "sticker") {
+    return `
+      <div class="mock-sticker-sheet">
+        <div class="sticker-circle">${logo}</div>
+        <div class="sticker-pill">${safeName}</div>
+        <div class="sticker-square">${safeTitle}</div>
+      </div>
+    `;
+  }
+
+  if (layout === "postcard") {
+    return `
+      <div class="mock-postcard">
+        <div class="postcard-photo"></div>
+        <div class="postcard-message">
+          ${logo}
+          <strong>${safeTitle}</strong>
+          <p>${safeBody}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  if (layout === "keyring") {
+    return `
+      <div class="mock-keyring">
+        <span class="keyring-loop"></span>
+        <div class="keyring-body">${logo}<strong>${safeName}</strong></div>
+      </div>
+    `;
+  }
+
+  if (layout === "mug") {
+    return `
+      <div class="mock-mug">
+        <div class="mug-cup">${logo}<strong>${safeTitle}</strong></div>
+        <span class="mug-handle"></span>
+      </div>
+    `;
+  }
+
+  if (layout === "guide" || layout === "notice" || layout === "menu") {
+    return `
+      <div class="mock-document">
+        <header>${logo}<span>${safeName}</span></header>
+        <strong>${safeTitle}</strong>
+        <p>${safeBody}</p>
+        <div class="document-lines"><i></i><i></i><i></i></div>
+      </div>
+    `;
+  }
+
+  if (layout === "review" || layout === "coupon") {
+    return `
+      <div class="mock-card-ticket">
+        <div>${logo}<strong>${safeTitle}</strong><p>${safeBody}</p></div>
+        <span class="qr-box">QR</span>
+      </div>
+    `;
+  }
+
+  if (layout === "banner") {
+    return `
+      <div class="mock-banner-wide">
+        ${logo}
+        <div><strong>${safeTitle}</strong><p>${safeBody}</p></div>
+        <span>EVENT</span>
+      </div>
+    `;
+  }
+
+  if (layout === "leaflet") {
+    return `
+      <div class="mock-leaflet">
+        <section>${logo}<strong>${safeName}</strong></section>
+        <section><strong>${safeTitle}</strong><p>${safeBody}</p></section>
+        <section><span>MAP</span><span>INFO</span></section>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="mock-social-post">
+      <div class="social-image"></div>
+      <div class="social-caption">${logo}<strong>${safeTitle}</strong><p>${safeBody}</p></div>
+    </div>
+  `;
+}
+
 function generateMockups(input) {
   const name = escapeHTML(input.name);
   const mood = escapeHTML(input.mood);
-  const strengths = escapeHTML(input.strengths);
-  const goals = input.goals.length ? input.goals : ["리뷰 요청 카드", "SNS 포스트", "굿즈"];
+  const selectedGoals = input.goals.length
+    ? input.goals
+    : [
+        { category: "안내문", layout: "review", title: "리뷰 요청 카드" },
+        { category: "홍보물", layout: "social", title: "SNS 포스트" },
+        { category: "굿즈", layout: "sticker", title: "스티커" },
+      ];
   const logo = logoMarkup();
-
-  const mockups = [
-    {
-      type: "Review card",
-      title: "리뷰 요청 카드",
-      body: "오늘의 시간이 좋았다면 짧은 리뷰를 남겨주세요.",
-      className: "review",
-    },
-    {
-      type: "Room guide",
-      title: goals.includes("객실 안내문") ? "객실 안내문" : "매장 안내문",
-      body: `${input.name}을 찾아주셔서 감사합니다. 편안한 이용을 위해 안내드립니다.`,
-      className: "guide",
-    },
-    {
-      type: "Sticker",
-      title: "굿즈 스티커",
-      body: "좋은 시간은 오래 남습니다.",
-      className: "sticker",
-    },
-    {
-      type: "Social post",
-      title: "SNS 포스트",
-      body: `${input.mood}을 느낄 수 있는 ${input.name}.`,
-      className: "social",
-    },
-    {
-      type: "Event banner",
-      title: "리뷰 이벤트",
-      body: "리뷰 인증 시 다음 방문 혜택을 드립니다.",
-      className: "banner",
-    },
-    {
-      type: "Package tag",
-      title: "패키지 태그",
-      body: strengths,
-      className: "tag",
-    },
-  ];
+  const mockups = selectedGoals.slice(0, 8).map((goal, index) => createMockup(goal, index, input));
 
   mockupGrid.innerHTML = mockups
     .map(
       (mockup) => `
-        <article class="mockup-card ${mockup.className}">
-          <div class="mockup-logo-slot">${logo}</div>
+        <article class="mockup-card ${mockup.layout}">
+          ${mockupVisual(mockup.layout, logo, mockup.title, mockup.body, input)}
           <span>${escapeHTML(mockup.type)}</span>
           <h5>${escapeHTML(mockup.title)}</h5>
           <p>${escapeHTML(mockup.body)}</p>
@@ -223,17 +330,20 @@ function generatePromoIdeas(input) {
     `패키지 태그: 상품/객실 비품에 붙일 수 있는 브랜드 한 줄 문구`,
   ];
 
-  const goalIdeas = input.goals.map((goal) => `${goal}: ${input.name}의 강점 "${input.strengths}"을 중심 메시지로 사용`);
+  const goalIdeas = input.goals.map(
+    (goal) => `${goal.category} / ${goal.title}: ${input.name}의 강점 "${input.strengths}"을 중심 메시지로 사용`,
+  );
 
   return `
     <p><strong>시각 기준</strong><br>${imageNote}</p>
+    <p><strong>선택한 종류</strong><br>${escapeHTML(categorySummary(input.goals).join(" · ") || "기본 추천 세트")}</p>
     <p><strong>추천 제작물</strong></p>
     ${renderList([...goalIdeas, ...baseIdeas].slice(0, 10))}
   `;
 }
 
 function generateImagePrompt(input) {
-  const goals = input.goals.length ? input.goals.join(", ") : "SNS 포스트";
+  const goals = input.goals.length ? goalTitles(input.goals).join(", ") : "SNS 포스트";
   const imageContext = logoImage
     ? "업로드한 로고를 상단 또는 하단 여백에 자연스럽게 배치한다."
     : "브랜드 로고가 들어갈 여백을 남긴다.";
@@ -332,7 +442,7 @@ function collectResultText() {
     `브랜딩메이트 결과 - ${input.name}`,
     "",
     "[선택 제작물]",
-    input.goals.join(", ") || "선택 없음",
+    categorySummary(input.goals).join(" / ") || "선택 없음",
     "",
     "[브랜드 언어]",
     outputs.brandLanguage.innerText,
@@ -401,7 +511,7 @@ resetButton.addEventListener("click", () => {
   });
 
   document.querySelectorAll(".goal-card").forEach((card, index) => {
-    card.classList.toggle("selected", [0, 1, 2, 3].includes(index));
+    card.classList.toggle("selected", ["sticker", "guide", "review", "social"].includes(card.dataset.layout));
   });
 
   uploadedImages.forEach((image) => URL.revokeObjectURL(image.url));

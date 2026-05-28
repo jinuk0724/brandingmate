@@ -126,35 +126,85 @@
 
           <section class="step-panel" data-step="2" aria-labelledby="goals-title">
             <div class="section-heading">
-              <h3 id="goals-title">만들고 싶은 결과물</h3>
-              <p>필요한 제작물을 고르면 마지막 단계에서 문구와 예시 시안이 함께 정리됩니다.</p>
+              <h3 id="goals-title">제작물 종류 선택</h3>
+              <p>굿즈, 안내문, 홍보물 중 실제 만들고 싶은 종류를 고르면 그에 맞는 시안과 문구를 제안합니다.</p>
             </div>
 
-            <div class="goal-grid" id="assetGoals">
-              <button type="button" class="goal-card selected">
-                <strong>객실 안내문</strong>
-                <span>체크인, 이용 안내, 주의사항</span>
-              </button>
-              <button type="button" class="goal-card selected">
-                <strong>리뷰 요청 카드</strong>
-                <span>리뷰 유도 문구와 QR 카드</span>
-              </button>
-              <button type="button" class="goal-card selected">
-                <strong>굿즈</strong>
-                <span>스티커, 엽서, 키링, 머그</span>
-              </button>
-              <button type="button" class="goal-card selected">
-                <strong>SNS 포스트</strong>
-                <span>인스타그램, 네이버 플레이스</span>
-              </button>
-              <button type="button" class="goal-card">
-                <strong>이벤트 배너</strong>
-                <span>리뷰 이벤트, 재방문 쿠폰</span>
-              </button>
-              <button type="button" class="goal-card">
-                <strong>판촉물</strong>
-                <span>쿠폰, 리플렛, 패키지 태그</span>
-              </button>
+            <div class="goal-section" id="assetGoals">
+              <article class="goal-group">
+                <div>
+                  <p class="eyebrow">Goods</p>
+                  <h4>굿즈</h4>
+                </div>
+                <div class="goal-grid compact">
+                  <button type="button" class="goal-card selected" data-category="굿즈" data-layout="sticker">
+                    <strong>스티커</strong>
+                    <span>로고와 대표 문장 중심</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="굿즈" data-layout="postcard">
+                    <strong>엽서</strong>
+                    <span>공간 감성과 메시지</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="굿즈" data-layout="keyring">
+                    <strong>키링</strong>
+                    <span>작고 선명한 마크형</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="굿즈" data-layout="mug">
+                    <strong>머그컵</strong>
+                    <span>일상 사용 굿즈</span>
+                  </button>
+                </div>
+              </article>
+
+              <article class="goal-group">
+                <div>
+                  <p class="eyebrow">Guide</p>
+                  <h4>안내문</h4>
+                </div>
+                <div class="goal-grid compact">
+                  <button type="button" class="goal-card selected" data-category="안내문" data-layout="guide">
+                    <strong>객실 안내문</strong>
+                    <span>체크인, 이용 안내</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="안내문" data-layout="notice">
+                    <strong>주의사항 안내</strong>
+                    <span>조용한 안내 톤</span>
+                  </button>
+                  <button type="button" class="goal-card selected" data-category="안내문" data-layout="review">
+                    <strong>리뷰 요청 카드</strong>
+                    <span>QR 카드형 문구</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="안내문" data-layout="menu">
+                    <strong>메뉴/서비스 안내</strong>
+                    <span>혜택과 서비스 소개</span>
+                  </button>
+                </div>
+              </article>
+
+              <article class="goal-group">
+                <div>
+                  <p class="eyebrow">Promotion</p>
+                  <h4>홍보물</h4>
+                </div>
+                <div class="goal-grid compact">
+                  <button type="button" class="goal-card selected" data-category="홍보물" data-layout="social">
+                    <strong>SNS 포스트</strong>
+                    <span>인스타그램, 네이버</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="홍보물" data-layout="banner">
+                    <strong>이벤트 배너</strong>
+                    <span>리뷰 이벤트, 쿠폰</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="홍보물" data-layout="leaflet">
+                    <strong>리플렛</strong>
+                    <span>오프라인 배포용</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="홍보물" data-layout="coupon">
+                    <strong>쿠폰</strong>
+                    <span>재방문 유도용</span>
+                  </button>
+                </div>
+              </article>
             </div>
           </section>
 
