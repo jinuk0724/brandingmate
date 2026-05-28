@@ -212,8 +212,15 @@ function mockupVisual(layout, logo, title, body, input) {
 
   if (layout === "mug") {
     return `
-      <div class="mock-mug">
-        <div class="mug-cup">${logo}<strong>${safeTitle}</strong></div>
+      <div class="mock-mug product-stage">
+        <div class="mug-shadow"></div>
+        <div class="mug-body">
+          <div class="mug-print-area">
+            ${logo}
+            <strong>${safeTitle}</strong>
+            <small>${safeName}</small>
+          </div>
+        </div>
         <span class="mug-handle"></span>
       </div>
     `;
@@ -251,10 +258,23 @@ function mockupVisual(layout, logo, title, body, input) {
 
   if (layout === "leaflet") {
     return `
-      <div class="mock-leaflet">
-        <section>${logo}<strong>${safeName}</strong></section>
-        <section><strong>${safeTitle}</strong><p>${safeBody}</p></section>
-        <section><span>MAP</span><span>INFO</span></section>
+      <div class="mock-leaflet print-preview">
+        <section class="leaflet-cover">
+          <div class="leaflet-logo">${logo}</div>
+          <strong>${safeName}</strong>
+          <p>Brand guide</p>
+        </section>
+        <section class="leaflet-story">
+          <span>01</span>
+          <strong>${safeTitle}</strong>
+          <p>${safeBody}</p>
+          <i></i>
+        </section>
+        <section class="leaflet-info">
+          <div class="map-card"><span></span><span></span><span></span></div>
+          <strong>Visit info</strong>
+          <p>위치 · 이용 안내 · 혜택</p>
+        </section>
       </div>
     `;
   }
