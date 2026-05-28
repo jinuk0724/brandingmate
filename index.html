@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>브랜딩메이트</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-mark" aria-hidden="true">BM</div>
+        <div>
+          <p class="eyebrow">BrandingMate</p>
+          <h1>브랜딩메이트</h1>
+          <p class="intro">
+            로고와 사업장 정보를 순서대로 넣으면 브랜드 언어, 홍보 문구,
+            굿즈 및 마케팅 시안 예시를 단계별로 만들어줍니다.
+          </p>
+        </div>
+
+        <nav class="progress-list" aria-label="제작 단계">
+          <button type="button" class="step-link active" data-step-target="0">
+            <span>01</span>
+            사업장 정보
+          </button>
+          <button type="button" class="step-link" data-step-target="1">
+            <span>02</span>
+            로고 업로드
+          </button>
+          <button type="button" class="step-link" data-step-target="2">
+            <span>03</span>
+            제작물 선택
+          </button>
+          <button type="button" class="step-link" data-step-target="3">
+            <span>04</span>
+            결과 확인
+          </button>
+        </nav>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Local business marketing studio</p>
+            <h2 id="stepTitle">사업장 정보를 알려주세요</h2>
+          </div>
+          <button class="ghost-button" id="resetButton" type="button">초기화</button>
+        </header>
+
+        <section class="wizard-card">
+          <div class="step-track" aria-hidden="true">
+            <span class="track-dot active"></span>
+            <span class="track-dot"></span>
+            <span class="track-dot"></span>
+            <span class="track-dot"></span>
+          </div>
+
+          <section class="step-panel active" data-step="0" aria-labelledby="business-title">
+            <div class="section-heading">
+              <h3 id="business-title">브랜드 자료</h3>
+              <p>처음에는 짧게 적어도 충분합니다. 뒤 단계에서 결과물을 보며 다듬을 수 있습니다.</p>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                사업장 이름
+                <input id="businessName" type="text" placeholder="예: 스테이 봄날" />
+              </label>
+              <label>
+                업종
+                <select id="businessType">
+                  <option>숙소 / 펜션 / 호텔</option>
+                  <option>카페 / 베이커리</option>
+                  <option>식당 / 주점</option>
+                  <option>뷰티 / 스파</option>
+                  <option>공방 / 클래스</option>
+                  <option>소매 / 편집숍</option>
+                  <option>기타 로컬 사업장</option>
+                </select>
+              </label>
+              <label>
+                지역 / 공간 분위기
+                <input id="locationMood" type="text" placeholder="예: 제주 숲 근처, 조용하고 따뜻한 감성" />
+              </label>
+              <label>
+                주요 고객층
+                <input id="audience" type="text" placeholder="예: 20-40대 커플, 가족 여행객" />
+              </label>
+              <label class="wide">
+                현재 갖고 있는 강점
+                <textarea id="strengths" rows="4" placeholder="예: 객실이 넓고 향이 좋다, 주변 산책로가 예쁘다, 조식이 정갈하다"></textarea>
+              </label>
+            </div>
+          </section>
+
+          <section class="step-panel" data-step="1" aria-labelledby="upload-title">
+            <div class="section-heading">
+              <h3 id="upload-title">로고와 참고 이미지</h3>
+              <p>로고는 시안물에 바로 반영됩니다. 공간 사진이나 상품 사진은 분위기 참고 자료로 올려주세요.</p>
+            </div>
+
+            <div class="upload-grid">
+              <label class="upload-box logo-upload">
+                <input id="logoInput" type="file" accept="image/*" />
+                <span>로고 파일 선택</span>
+                <small>PNG, JPG, WEBP 권장</small>
+              </label>
+              <label class="upload-box">
+                <input id="imageInput" type="file" accept="image/*" multiple />
+                <span>참고 이미지 선택</span>
+                <small>공간, 상품, 기존 홍보물</small>
+              </label>
+            </div>
+
+            <div class="logo-preview-wrap" id="logoPreviewWrap">
+              <div class="logo-preview empty" id="logoPreview">LOGO</div>
+              <div>
+                <strong>로고 적용 미리보기</strong>
+                <p>로고를 올리면 리뷰 카드, 안내문, 굿즈, SNS 포스트 시안에 자동으로 배치됩니다.</p>
+              </div>
+            </div>
+
+            <div class="preview-grid" id="previewGrid" aria-live="polite"></div>
+          </section>
+
+          <section class="step-panel" data-step="2" aria-labelledby="goals-title">
+            <div class="section-heading">
+              <h3 id="goals-title">만들고 싶은 결과물</h3>
+              <p>필요한 제작물을 고르면 마지막 단계에서 문구와 예시 시안이 함께 정리됩니다.</p>
+            </div>
+
+            <div class="goal-grid" id="assetGoals">
+              <button type="button" class="goal-card selected">
+                <strong>객실 안내문</strong>
+                <span>체크인, 이용 안내, 주의사항</span>
+              </button>
+              <button type="button" class="goal-card selected">
+                <strong>리뷰 요청 카드</strong>
+                <span>리뷰 유도 문구와 QR 카드</span>
+              </button>
+              <button type="button" class="goal-card selected">
+                <strong>굿즈</strong>
+                <span>스티커, 엽서, 키링, 머그</span>
+              </button>
+              <button type="button" class="goal-card selected">
+                <strong>SNS 포스트</strong>
+                <span>인스타그램, 네이버 플레이스</span>
+              </button>
+              <button type="button" class="goal-card">
+                <strong>이벤트 배너</strong>
+                <span>리뷰 이벤트, 재방문 쿠폰</span>
+              </button>
+              <button type="button" class="goal-card">
+                <strong>판촉물</strong>
+                <span>쿠폰, 리플렛, 패키지 태그</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="step-panel" data-step="3" aria-labelledby="result-title">
+            <div class="section-heading">
+              <h3 id="result-title">브랜드 제안 결과</h3>
+              <p>로고 기반 예시 시안과 바로 쓸 수 있는 브랜드 언어를 확인하세요.</p>
+            </div>
+
+            <section class="mockup-section">
+              <div class="mockup-heading">
+                <h4>로고 적용 예시 시안</h4>
+                <button class="secondary-button" id="refreshMockupsButton" type="button">시안 다시 만들기</button>
+              </div>
+              <div class="mockup-grid" id="mockupGrid" aria-live="polite"></div>
+            </section>
+
+            <section class="result-grid" aria-live="polite">
+              <article class="result-card">
+                <h3>브랜드 언어</h3>
+                <div id="brandLanguage" class="result-content empty">결과 생성 전입니다.</div>
+              </article>
+              <article class="result-card">
+                <h3>홍보물 / 굿즈 제안</h3>
+                <div id="promoIdeas" class="result-content empty">선택한 제작물에 맞춰 정리됩니다.</div>
+              </article>
+              <article class="result-card">
+                <h3>포스트 이미지 프롬프트</h3>
+                <div id="imagePrompt" class="result-content empty">이미지 생성 및 수정용 프롬프트가 표시됩니다.</div>
+              </article>
+              <article class="result-card">
+                <h3>바로 쓸 문구</h3>
+                <div id="copyBlocks" class="result-content empty">안내문, 리뷰 요청, 이벤트 문구 초안을 만듭니다.</div>
+              </article>
+            </section>
+          </section>
+
+          <footer class="wizard-actions">
+            <button class="secondary-button" id="prevButton" type="button">이전</button>
+            <button class="primary-button" id="nextButton" type="button">다음</button>
+            <button class="primary-button hidden" id="generateButton" type="button">브랜드 제안 만들기</button>
+            <button class="secondary-button hidden" id="copyButton" type="button">결과 복사</button>
+          </footer>
+        </section>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
