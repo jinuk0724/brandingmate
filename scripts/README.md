@@ -3,6 +3,9 @@
 This folder contains a small publisher for the Threads API.
 The current automated content theme is emotional encouragement, positivity,
 and the power of attraction.
+On Mondays, the generated post emphasizes encouragement for the start of the
+week. On Korean public holidays and weekends, it emphasizes rest, recovery, and
+the value of pausing.
 
 ## Setup
 
@@ -47,3 +50,9 @@ OPENAI_MODEL=gpt-5-mini
 Use the workflow's manual run button with `dry_run=true` first. Set
 `dry_run=false` only when the generated post looks correct and the Threads token
 is valid.
+
+The script checks Korean public holidays at runtime through Nager.Date:
+
+```text
+https://date.nager.at/api/v3/PublicHolidays/{year}/KR
+```

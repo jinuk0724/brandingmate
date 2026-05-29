@@ -78,6 +78,64 @@ function kstTimestamp() {
   }).format(new Date());
 }
 
+function kstDateParts() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    weekday: "long",
+  }).formatToParts(new Date());
+
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return {
+    isoDate: `${values.year}-${values.month}-${values.day}`,
+    year: values.year,
+    weekday: values.weekday,
+  };
+}
+
+function weekdayKo(weekday) {
+  return {
+    Monday: "월요일",
+    Tuesday: "화요일",
+    Wednesday: "수요일",
+    Thursday: "목요일",
+    Friday: "금요일",
+    Saturday: "토요일",
+    Sunday: "일요일",
+  }[weekday] || weekday;
+}
+
+async function getKoreanHolidayContext(parts) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+
+  try {
+    const response = await fetch(
+      `https://date.nager.at/api/v3/PublicHolidays/${parts.year}/KR`,
+      { signal: controller.signal },
+    );
+    if (!response.ok) throw new Error(`holiday lookup ${response.status}`);
+
+    const holidays = await response.json();
+    const holiday = holidays.find((item) => item.date === parts.isoDate);
+    return {
+      isHoliday: Boolean(holiday),
+      name: holiday?.localName || holiday?.name || "",
+      lookup: "ok",
+    };
+  } catch (error) {
+    return {
+      isHoliday: false,
+      name: "",
+      lookup: `unavailable: ${error.message}`,
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 function extractOutputText(response) {
   if (typeof response.output_text === "string") return response.output_text.trim();
 
@@ -92,19 +150,36 @@ function extractOutputText(response) {
   return chunks.join("\n").trim();
 }
 
-function postPrompt(extraInstruction = "") {
+async function postPrompt(extraInstruction = "") {
+  const parts = kstDateParts();
+  const holiday = await getKoreanHolidayContext(parts);
+  const isWeekend = parts.weekday === "Saturday" || parts.weekday === "Sunday";
+  const isMonday = parts.weekday === "Monday";
+
+  let dayGuidance = "오늘은 감성, 응원, 긍정, 끌어당김의 힘을 자연스럽게 담는다.";
+  if (holiday.isHoliday || isWeekend) {
+    const holidayName = holiday.name ? ` (${holiday.name})` : "";
+    dayGuidance = `오늘은 대한민국 기준 ${holiday.isHoliday ? `공휴일${holidayName}` : "주말"}이다. 쉼, 휴식, 회복의 중요성을 중심으로 쓴다.`;
+  } else if (isMonday) {
+    dayGuidance = "오늘은 월요일이다. 한주의 시작을 따뜻하게 응원하고, 좋은 흐름을 끌어당기는 글로 쓴다.";
+  }
+
   return [
     `현재 한국 시간: ${kstTimestamp()}`,
+    `오늘 날짜: ${parts.isoDate} ${weekdayKo(parts.weekday)}`,
+    `대한민국 공휴일 조회: ${holiday.lookup}${holiday.name ? ` (${holiday.name})` : ""}`,
+    `콘텐츠 방향: ${dayGuidance}`,
     "",
     "Threads에 바로 게시할 최종 글만 작성해.",
     "주제는 감성, 응원, 긍정, 끌어당김의 힘이다.",
     "읽는 사람이 오늘을 다시 믿고, 마음을 정돈하고, 좋은 방향으로 한 걸음 움직이고 싶어지는 분위기로 작성한다.",
     "구성은 반드시 다음 순서를 따른다:",
     "1. 위인 또는 잘 알려진 인물의 명언 한글 1줄, 출처/인물명 포함",
-    "2. 같은 명언 영어 1줄, 출처/인물명 포함",
-    "3. 빈 줄",
-    "4. 관련 한국어 문장 3~5줄",
-    "5. 한국어 해시태그 3~6개",
+    "2. 빈 줄",
+    "3. 같은 명언 영어 1줄, 출처/인물명 포함",
+    "4. 빈 줄",
+    "5. 관련 한국어 문장 3~5줄",
+    "6. 한국어 해시태그 3~6개",
     "",
     "규칙:",
     "- 전체 글은 500자 이내로 작성한다.",
@@ -150,11 +225,11 @@ async function openaiResponse(input) {
 }
 
 async function createPostText(maxChars) {
-  let text = await openaiResponse(postPrompt());
+  let text = await openaiResponse(await postPrompt());
   if ([...text].length <= maxChars) return text;
 
   text = await openaiResponse(
-    postPrompt(`이전 출력이 너무 길었다. 반드시 ${maxChars}자 이내로 더 짧게 작성한다.`),
+    await postPrompt(`이전 출력이 너무 길었다. 반드시 ${maxChars}자 이내로 더 짧게 작성한다.`),
   );
   if ([...text].length > maxChars) {
     throw new Error(`Generated post is ${[...text].length} characters, above limit ${maxChars}.`);
