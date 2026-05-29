@@ -1,0 +1,53 @@
+name: Threads auto publish
+
+on:
+  schedule:
+    # 09:00, 16:00, 20:00 Asia/Seoul
+    - cron: "0 0,7,11 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Generate only, do not publish"
+        required: true
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+      OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5-mini' }}
+      THREADS_MAX_CHARS: "500"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate and publish Threads post
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
+            node scripts/generate_and_publish_threads_post.js --dry-run
+          else
+            node scripts/generate_and_publish_threads_post.js
+          fi
+
+      - name: Upload generated post
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: latest-threads-post
+          path: scripts/latest-post.txt
+          if-no-files-found: ignore

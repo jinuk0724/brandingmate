@@ -1,0 +1,8 @@
+.env
+.env.*
+!*.env.example
+node_modules/
+outputs/
+scripts/latest-post.txt
+scripts/missed-*.txt
+scripts/test-post-now.txt

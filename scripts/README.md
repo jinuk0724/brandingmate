@@ -1,0 +1,49 @@
+# Threads publishing
+
+This folder contains a small publisher for the Threads API.
+The current automated content theme is emotional encouragement, positivity,
+and the power of attraction.
+
+## Setup
+
+Create a `.env` file in the project root:
+
+```text
+THREADS_ACCESS_TOKEN=your_threads_access_token
+```
+
+The `.env` file is ignored by Git.
+
+## Dry run
+
+```powershell
+& 'C:\Users\chaji\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' scripts/publish_threads_post.js --file scripts/sample-post.txt --dry-run
+```
+
+## Publish
+
+```powershell
+& 'C:\Users\chaji\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' scripts/publish_threads_post.js --file scripts/sample-post.txt
+```
+
+## Cloud automation with GitHub Actions
+
+The cloud workflow lives at `.github/workflows/threads-auto-publish.yml`.
+It runs at 09:00, 16:00, and 20:00 Asia/Seoul, even when the local PC is off.
+
+Add these GitHub repository secrets:
+
+```text
+OPENAI_API_KEY
+THREADS_ACCESS_TOKEN
+```
+
+Optional repository variable:
+
+```text
+OPENAI_MODEL=gpt-5-mini
+```
+
+Use the workflow's manual run button with `dry_run=true` first. Set
+`dry_run=false` only when the generated post looks correct and the Threads token
+is valid.
