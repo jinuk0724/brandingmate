@@ -4,6 +4,8 @@ on:
   schedule:
     # 09:00, 16:00, 20:00 Asia/Seoul
     - cron: "0 0,7,11 * * *"
+    # One-off test run: 2026-05-29 22:00 Asia/Seoul
+    - cron: "0 13 29 5 *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -36,7 +38,20 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Check schedule guard
+        id: schedule_guard
+        shell: bash
+        run: |
+          SHOULD_RUN=true
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" = "0 13 29 5 *" ]; then
+            if [ "$(date -u +%Y-%m-%d)" != "2026-05-29" ]; then
+              SHOULD_RUN=false
+            fi
+          fi
+          echo "should_run=$SHOULD_RUN" >> "$GITHUB_OUTPUT"
+
       - name: Generate and publish Threads post
+        if: steps.schedule_guard.outputs.should_run == 'true'
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
             node scripts/generate_and_publish_threads_post.js --dry-run
