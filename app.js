@@ -59,9 +59,7 @@ function setAccess(isAllowed) {
   appShell.classList.toggle("locked", !isAllowed);
   appShell.setAttribute("aria-hidden", String(!isAllowed));
 
-  if (isAllowed) {
-    localStorage.setItem(ACCESS_KEY, "true");
-  } else {
+  if (!isAllowed) {
     localStorage.removeItem(ACCESS_KEY);
     passwordInput.value = "";
     window.setTimeout(() => passwordInput.focus(), 50);
@@ -477,4 +475,5 @@ resetButton.addEventListener("click", () => {
 });
 
 updateStep(0);
-setAccess(localStorage.getItem(ACCESS_KEY) === "true");
+localStorage.removeItem(ACCESS_KEY);
+setAccess(false);
