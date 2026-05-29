@@ -39,6 +39,7 @@ Add these GitHub repository secrets:
 ```text
 OPENAI_API_KEY
 THREADS_ACCESS_TOKEN
+NOTION_API_KEY
 ```
 
 Optional repository variable:
@@ -56,3 +57,13 @@ The script checks Korean public holidays at runtime through Nager.Date:
 ```text
 https://date.nager.at/api/v3/PublicHolidays/{year}/KR
 ```
+
+When `NOTION_API_KEY` is present, the workflow appends the generated Threads
+post to this Notion page after a successful publish:
+
+```text
+f8f17c58bd2c4f97a4e610b92e80837a
+```
+
+Share the Notion page with your Notion integration first, or the API will return
+a permissions error.

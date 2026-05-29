@@ -27,6 +27,8 @@ jobs:
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+      NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+      NOTION_PAGE_ID: "f8f17c58bd2c4f97a4e610b92e80837a"
       OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5-mini' }}
       THREADS_MAX_CHARS: "500"
     steps:
@@ -66,3 +68,7 @@ jobs:
           name: latest-threads-post
           path: scripts/latest-post.txt
           if-no-files-found: ignore
+
+      - name: Save generated post to Notion
+        if: success() && steps.schedule_guard.outputs.should_run == 'true' && env.NOTION_API_KEY != ''
+        run: node scripts/append_threads_post_to_notion.js --file scripts/latest-post.txt
