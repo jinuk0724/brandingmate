@@ -14,11 +14,9 @@ const logoInput = document.querySelector("#logoInput");
 const imageInput = document.querySelector("#imageInput");
 const logoPreview = document.querySelector("#logoPreview");
 const previewGrid = document.querySelector("#previewGrid");
-const mockupGrid = document.querySelector("#mockupGrid");
 const prevButton = document.querySelector("#prevButton");
 const nextButton = document.querySelector("#nextButton");
 const generateButton = document.querySelector("#generateButton");
-const refreshMockupsButton = document.querySelector("#refreshMockupsButton");
 const copyButton = document.querySelector("#copyButton");
 const resetButton = document.querySelector("#resetButton");
 const toast = document.querySelector("#toast");
@@ -144,197 +142,6 @@ function categorySummary(goals) {
   return Object.entries(grouped).map(([category, titles]) => `${category}: ${titles.join(", ")}`);
 }
 
-function createMockup(goal, index, input) {
-  const fallbackLayouts = ["poster", "review", "guide", "sticker", "social", "banner", "tag"];
-  const layout = goal?.layout || fallbackLayouts[index % fallbackLayouts.length];
-  const title = goal?.title || ["AI 포스터", "리뷰 요청 카드", "객실 안내문", "스티커", "SNS 포스트", "이벤트 배너", "패키지 태그"][index];
-  const category = goal?.category || "추천";
-  const copyByLayout = {
-    poster: "사진, 조명, 로고, 타이포그래피를 결합한 완성형 홍보 포스터.",
-    sticker: "좋은 시간은 오래 남습니다.",
-    postcard: `${input.mood}에서 쉬어가는 작은 기록.`,
-    keyring: "작게 지니는 브랜드의 순간.",
-    mug: "매일의 시작에 브랜드 감성을 더합니다.",
-    guide: `${input.name}을 찾아주셔서 감사합니다. 편안한 이용을 위해 안내드립니다.`,
-    notice: "조용한 이용을 부탁드리며 필요한 내용을 정리했습니다.",
-    review: "오늘의 시간이 좋았다면 짧은 리뷰를 남겨주세요.",
-    menu: "이곳에서 누릴 수 있는 서비스를 한눈에 안내합니다.",
-    social: `${input.mood}을 느낄 수 있는 ${input.name}.`,
-    banner: "리뷰 인증 시 다음 방문 혜택을 드립니다.",
-    leaflet: "방문 전 알아두면 좋은 매력을 접지형으로 소개합니다.",
-    coupon: "다음 방문을 위한 작은 혜택을 준비했습니다.",
-    tag: input.strengths,
-  };
-
-  return {
-    type: category,
-    title,
-    body: copyByLayout[layout] || copyByLayout.tag,
-    layout,
-  };
-}
-
-function mockupVisual(layout, logo, title, body, input) {
-  const safeTitle = escapeHTML(title);
-  const safeBody = escapeHTML(body);
-  const safeName = escapeHTML(input.name);
-  const heroImage = uploadedImages[0]?.url;
-
-  if (layout === "poster") {
-    const productVisual = heroImage
-      ? `<img class="poster-product-image" src="${heroImage}" alt="${escapeHTML(uploadedImages[0].name)}" />`
-      : `<div class="poster-product-placeholder"><span></span></div>`;
-
-    return `
-      <div class="mock-premium-poster">
-        <div class="poster-light"></div>
-        <div class="poster-leaf-shadow"></div>
-        <header>${logo}</header>
-        <strong class="poster-headline">Signature<br />Moment</strong>
-        <p>브랜드가 기억되는 한 장면을 만듭니다.</p>
-        <div class="poster-hero">${productVisual}</div>
-        <footer>${safeName}</footer>
-      </div>
-    `;
-  }
-
-  if (layout === "sticker") {
-    return `
-      <div class="mock-sticker-sheet">
-        <div class="sticker-circle">${logo}</div>
-        <div class="sticker-pill">${safeName}</div>
-        <div class="sticker-square">${safeTitle}</div>
-      </div>
-    `;
-  }
-
-  if (layout === "postcard") {
-    return `
-      <div class="mock-postcard">
-        <div class="postcard-photo"></div>
-        <div class="postcard-message">
-          ${logo}
-          <strong>${safeTitle}</strong>
-          <p>${safeBody}</p>
-        </div>
-      </div>
-    `;
-  }
-
-  if (layout === "keyring") {
-    return `
-      <div class="mock-keyring">
-        <span class="keyring-loop"></span>
-        <div class="keyring-body">${logo}<strong>${safeName}</strong></div>
-      </div>
-    `;
-  }
-
-  if (layout === "mug") {
-    return `
-      <div class="mock-mug product-stage">
-        <div class="mug-shadow"></div>
-        <div class="mug-body">
-          <div class="mug-print-area">
-            ${logo}
-            <strong>${safeTitle}</strong>
-            <small>${safeName}</small>
-          </div>
-        </div>
-        <span class="mug-handle"></span>
-      </div>
-    `;
-  }
-
-  if (layout === "guide" || layout === "notice" || layout === "menu") {
-    return `
-      <div class="mock-document">
-        <header>${logo}<span>${safeName}</span></header>
-        <strong>${safeTitle}</strong>
-        <p>${safeBody}</p>
-        <div class="document-lines"><i></i><i></i><i></i></div>
-      </div>
-    `;
-  }
-
-  if (layout === "review" || layout === "coupon") {
-    return `
-      <div class="mock-card-ticket">
-        <div>${logo}<strong>${safeTitle}</strong><p>${safeBody}</p></div>
-        <span class="qr-box">QR</span>
-      </div>
-    `;
-  }
-
-  if (layout === "banner") {
-    return `
-      <div class="mock-banner-wide">
-        ${logo}
-        <div><strong>${safeTitle}</strong><p>${safeBody}</p></div>
-        <span>EVENT</span>
-      </div>
-    `;
-  }
-
-  if (layout === "leaflet") {
-    return `
-      <div class="mock-leaflet print-preview">
-        <section class="leaflet-cover">
-          <div class="leaflet-logo">${logo}</div>
-          <strong>${safeName}</strong>
-          <p>Brand guide</p>
-        </section>
-        <section class="leaflet-story">
-          <span>01</span>
-          <strong>${safeTitle}</strong>
-          <p>${safeBody}</p>
-          <i></i>
-        </section>
-        <section class="leaflet-info">
-          <div class="map-card"><span></span><span></span><span></span></div>
-          <strong>Visit info</strong>
-          <p>위치 · 이용 안내 · 혜택</p>
-        </section>
-      </div>
-    `;
-  }
-
-  return `
-    <div class="mock-social-post">
-      <div class="social-image"></div>
-      <div class="social-caption">${logo}<strong>${safeTitle}</strong><p>${safeBody}</p></div>
-    </div>
-  `;
-}
-
-function generateMockups(input) {
-  const name = escapeHTML(input.name);
-  const mood = escapeHTML(input.mood);
-  const selectedGoals = input.goals.length
-    ? input.goals
-    : [
-        { category: "안내문", layout: "review", title: "리뷰 요청 카드" },
-        { category: "홍보물", layout: "social", title: "SNS 포스트" },
-        { category: "굿즈", layout: "sticker", title: "스티커" },
-      ];
-  const logo = logoMarkup();
-  const mockups = selectedGoals.slice(0, 8).map((goal, index) => createMockup(goal, index, input));
-
-  mockupGrid.innerHTML = mockups
-    .map(
-      (mockup) => `
-        <article class="mockup-card ${mockup.layout}">
-          ${mockupVisual(mockup.layout, logo, mockup.title, mockup.body, input)}
-          <span>${escapeHTML(mockup.type)}</span>
-          <h5>${escapeHTML(mockup.title)}</h5>
-          <p>${escapeHTML(mockup.body)}</p>
-          <small>${name} · ${mood}</small>
-        </article>
-      `,
-    )
-    .join("");
-}
-
 function generateBrandLanguage(input) {
   const tones = pickTone(input.type, input.mood);
   const name = escapeHTML(input.name);
@@ -358,8 +165,8 @@ function generateBrandLanguage(input) {
 
 function generatePromoIdeas(input) {
   const imageNote = logoImage
-    ? `업로드한 로고 "${logoImage.name}"을 모든 시안의 기준 마크로 적용`
-    : "로고를 추가하면 리뷰 카드, 굿즈, SNS 시안에 바로 적용할 수 있음";
+    ? `업로드한 로고 "${logoImage.name}"을 프롬프트의 브랜드 기준으로 반영`
+    : "로고를 추가하면 프롬프트에 로고 배치와 왜곡 금지 조건을 반영할 수 있음";
 
   const baseIdeas = [
     `리뷰 요청 카드: "${input.name}에서의 순간이 좋았다면, 짧은 리뷰로 남겨주세요."`,
@@ -385,20 +192,57 @@ function generatePromoIdeas(input) {
 function generateImagePrompt(input) {
   const goals = input.goals.length ? goalTitles(input.goals).join(", ") : "SNS 포스트";
   const imageContext = logoImage
-    ? "업로드한 로고를 상단 또는 하단 여백에 자연스럽게 배치한다."
-    : "브랜드 로고가 들어갈 여백을 남긴다.";
+    ? `첨부한 로고 파일 "${logoImage.name}"을 원본 비율 그대로 사용한다. 로고를 재해석하거나 글자를 바꾸지 않는다.`
+    : "브랜드 로고가 들어갈 상단 또는 하단 여백을 남긴다.";
   const referenceContext = uploadedImages.length
-    ? `참고 이미지 ${uploadedImages.length}장을 제품, 공간, 질감, 조명 방향의 기준으로 사용한다.`
+    ? `참고 이미지 ${uploadedImages.length}장을 제품, 공간, 질감, 조명 방향의 기준으로 사용한다. 파일명: ${uploadedImages.map((image) => image.name).join(", ")}.`
     : "제품 또는 공간 사진이 없다면 고급 호텔/로컬 브랜드 홍보 사진을 새로 구성한다.";
-  const name = escapeHTML(input.name);
-  const safeGoals = escapeHTML(goals);
-  const type = escapeHTML(input.type);
-  const mood = escapeHTML(input.mood);
-  const audience = escapeHTML(input.audience);
+  const corePrompt = `${input.name}의 ${goals}를 제작한다. 업종은 ${input.type}, 분위기는 ${input.mood}, 주요 고객은 ${input.audience}. ${imageContext} ${referenceContext} 핵심 강점은 "${input.strengths}"이다. 결과물은 실제 브랜드 캠페인에 사용할 수 있는 완성형 비주얼이어야 하며, 저가 템플릿이나 단순 목업처럼 보이면 안 된다.`;
 
   return `
-    <p><strong>ChatGPT / Gemini 제작용 프롬프트</strong></p>
-    <p>${name}의 ${safeGoals}용 프리미엄 마케팅 비주얼을 제작한다. ${type} 브랜드이며 분위기는 ${mood}. 주요 고객은 ${audience}. ${imageContext} ${referenceContext} 결과물은 실제 브랜드 캠페인에 쓸 수 있는 완성형 포스터 수준이어야 한다. 자연광, 부드러운 그림자, 고급스러운 여백, 선명한 제품/공간 사진, 세련된 영문 대형 타이포그래피와 간결한 한글 보조 문구를 사용한다. 로고는 왜곡하지 말고 브랜드 컬러와 어울리게 배치한다. 저가 템플릿 느낌, 과한 장식, 작은 박스형 목업, 읽기 어려운 글자는 피한다.</p>
+    <div class="prompt-block primary">
+      <h4>마스터 프롬프트</h4>
+      <p>${escapeHTML(corePrompt)}</p>
+    </div>
+    <div class="prompt-block">
+      <h4>제작 목표</h4>
+      ${renderList([
+        `선택 제작물: ${categorySummary(input.goals).join(" / ") || "홍보물: AI 포스터, SNS 포스트"}`,
+        `브랜드명: ${input.name}`,
+        `업종/분위기: ${input.type} / ${input.mood}`,
+        `고객층: ${input.audience}`,
+        `강조할 강점: ${input.strengths}`,
+      ])}
+    </div>
+    <div class="prompt-block">
+      <h4>비주얼 디렉션</h4>
+      ${renderList([
+        "실제 광고 포스터처럼 사진, 빛, 그림자, 여백, 타이포그래피가 하나의 장면으로 보이게 만든다.",
+        "자연광 또는 호텔 라운지 조명처럼 부드러운 방향성이 있는 빛을 사용한다.",
+        "제품 또는 공간 이미지는 화면의 주인공으로 배치하고, 배경은 고급스럽고 과하지 않게 정리한다.",
+        "대형 헤드라인은 한눈에 읽히게 하고, 한글 보조 문구는 짧고 또렷하게 배치한다.",
+        "로고는 상단 중앙, 하단 브랜드 락업, 또는 제품 표면의 작은 인쇄 영역 중 하나에만 절제해서 사용한다.",
+      ])}
+    </div>
+    <div class="prompt-block">
+      <h4>로고/참고 이미지 규칙</h4>
+      ${renderList([
+        imageContext,
+        referenceContext,
+        "로고를 늘리거나 찌그러뜨리지 않는다.",
+        "로고 주변에는 충분한 여백을 둔다.",
+        "참고 이미지가 있다면 색감, 질감, 조명, 브랜드 분위기를 우선 반영한다.",
+      ])}
+    </div>
+    <div class="prompt-block">
+      <h4>금지사항</h4>
+      ${renderList([
+        "단순 카드 목업, 박스형 템플릿, 무료 템플릿 같은 구성 금지",
+        "로고 글자 오류, 깨진 한글, 읽기 어려운 작은 문구 금지",
+        "과한 장식, 복잡한 배경, 브랜드와 맞지 않는 색상 남용 금지",
+        "제품 사진이 흐리거나 실제 광고처럼 보이지 않는 결과 금지",
+      ])}
+    </div>
     <div class="ai-handoff">
       <a href="https://chatgpt.com/" target="_blank" rel="noreferrer">ChatGPT에서 만들기</a>
       <a href="https://gemini.google.com/" target="_blank" rel="noreferrer">Gemini에서 만들기</a>
@@ -427,7 +271,6 @@ function generateCopyBlocks(input) {
 function generateAll() {
   const input = getBrandInput();
 
-  generateMockups(input);
   outputs.brandLanguage.innerHTML = generateBrandLanguage(input);
   outputs.promoIdeas.innerHTML = generatePromoIdeas(input);
   outputs.imagePrompt.innerHTML = generateImagePrompt(input);
@@ -461,7 +304,6 @@ function previewLogo(file) {
     logoImage = null;
     logoPreview.className = "logo-preview empty";
     logoPreview.textContent = "LOGO";
-    generateMockups(getBrandInput());
     return;
   }
 
@@ -474,8 +316,7 @@ function previewLogo(file) {
 
     logoPreview.className = "logo-preview";
     logoPreview.innerHTML = `<img src="${logoImage.src}" alt="${escapeHTML(logoImage.name)}" />`;
-    generateMockups(getBrandInput());
-    showToast("로고를 시안에 적용했습니다.");
+    showToast("로고를 프롬프트 기준에 반영했습니다.");
   });
   reader.addEventListener("error", () => {
     showToast("로고 파일을 읽지 못했습니다. 다른 이미지 파일로 다시 시도해주세요.");
@@ -533,7 +374,6 @@ nextButton.addEventListener("click", () => {
 });
 
 generateButton.addEventListener("click", generateAll);
-refreshMockupsButton.addEventListener("click", () => generateMockups(getBrandInput()));
 
 copyButton.addEventListener("click", async () => {
   if (outputs.brandLanguage.classList.contains("empty")) {
@@ -567,7 +407,6 @@ resetButton.addEventListener("click", () => {
   logoInput.value = "";
   imageInput.value = "";
   previewGrid.innerHTML = "";
-  mockupGrid.innerHTML = "";
   logoPreview.className = "logo-preview empty";
   logoPreview.textContent = "LOGO";
 

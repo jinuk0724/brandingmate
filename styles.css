@@ -1220,6 +1220,10 @@ textarea:focus {
   padding: 22px;
 }
 
+.prompt-card {
+  grid-column: 1 / -1;
+}
+
 .result-content {
   margin-top: 16px;
   color: var(--charcoal);
@@ -1238,6 +1242,29 @@ textarea:focus {
 
 .result-content strong {
   color: var(--terracotta);
+}
+
+.prompt-block {
+  margin-bottom: 16px;
+  border: 1px solid rgba(217, 213, 203, 0.9);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 14px;
+}
+
+.prompt-block.primary {
+  border-color: rgba(183, 102, 76, 0.32);
+  background: rgba(183, 102, 76, 0.08);
+}
+
+.prompt-block h4 {
+  margin-bottom: 8px;
+  color: var(--charcoal);
+  font-size: 15px;
+}
+
+.prompt-block p {
+  margin-bottom: 0;
 }
 
 .toast {
