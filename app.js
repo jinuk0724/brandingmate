@@ -19,7 +19,16 @@ const nextButton = document.querySelector("#nextButton");
 const generateButton = document.querySelector("#generateButton");
 const copyButton = document.querySelector("#copyButton");
 const resetButton = document.querySelector("#resetButton");
+const logoutButton = document.querySelector("#logoutButton");
+const authScreen = document.querySelector("#authScreen");
+const appShell = document.querySelector("#appShell");
+const authForm = document.querySelector("#authForm");
+const passwordInput = document.querySelector("#passwordInput");
+const authMessage = document.querySelector("#authMessage");
 const toast = document.querySelector("#toast");
+
+const PASSWORD_HASH = "c192baf4ace6b7584fbd0f046f692186bc9405b37a48a5c7e3f4ce6ae5bae55e";
+const ACCESS_KEY = "brandingmate_access_granted";
 
 const outputs = {
   brandLanguage: document.querySelector("#brandLanguage"),
@@ -38,6 +47,46 @@ const stepTitles = [
 let currentStep = 0;
 let uploadedImages = [];
 let logoImage = null;
+
+async function sha256(value) {
+  const data = new TextEncoder().encode(value);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(hashBuffer)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function setAccess(isAllowed) {
+  authScreen.classList.toggle("hidden", isAllowed);
+  appShell.classList.toggle("locked", !isAllowed);
+  appShell.setAttribute("aria-hidden", String(!isAllowed));
+
+  if (isAllowed) {
+    localStorage.setItem(ACCESS_KEY, "true");
+  } else {
+    localStorage.removeItem(ACCESS_KEY);
+    passwordInput.value = "";
+    window.setTimeout(() => passwordInput.focus(), 50);
+  }
+}
+
+async function handleAuth(event) {
+  event.preventDefault();
+  const password = passwordInput.value.trim();
+
+  if (!password) {
+    authMessage.textContent = "비밀번호를 입력해주세요.";
+    return;
+  }
+
+  const hash = await sha256(password);
+  if (hash === PASSWORD_HASH) {
+    authMessage.textContent = "";
+    setAccess(true);
+    showToast("입장했습니다.");
+    return;
+  }
+
+  authMessage.textContent = "비밀번호가 맞지 않습니다.";
+}
 
 function escapeHTML(value) {
   return String(value).replace(/[&<>"']/g, (char) => {
@@ -350,6 +399,13 @@ document.querySelectorAll(".goal-card").forEach((card) => {
   card.addEventListener("click", () => card.classList.toggle("selected"));
 });
 
+authForm.addEventListener("submit", handleAuth);
+
+logoutButton.addEventListener("click", () => {
+  setAccess(false);
+  showToast("앱을 잠갔습니다.");
+});
+
 stepLinks.forEach((link) => {
   link.addEventListener("click", () => {
     updateStep(Number(link.dataset.stepTarget));
@@ -421,3 +477,4 @@ resetButton.addEventListener("click", () => {
 });
 
 updateStep(0);
+setAccess(localStorage.getItem(ACCESS_KEY) === "true");
