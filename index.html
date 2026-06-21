@@ -29,7 +29,7 @@
           <p class="eyebrow">BrandingMate</p>
           <h1>브랜딩메이트</h1>
           <p class="intro">
-            로고와 사업장 정보를 순서대로 넣으면 브랜드 언어, 제작물별 홍보 문구,
+            사업장 정보와 참고 이미지를 순서대로 넣으면 브랜드 언어, 제작물별 홍보 문구,
             AI 이미지 생성용 디테일 프롬프트를 단계별로 만들어줍니다.
           </p>
         </div>
@@ -41,7 +41,7 @@
           </button>
           <button type="button" class="step-link" data-step-target="1">
             <span>02</span>
-            로고 업로드
+            참고 이미지
           </button>
           <button type="button" class="step-link" data-step-target="2">
             <span>03</span>
@@ -86,16 +86,8 @@
                 <input id="businessName" type="text" placeholder="예: 스테이 봄날" />
               </label>
               <label>
-                업종
-                <select id="businessType">
-                  <option>숙소 / 펜션 / 호텔</option>
-                  <option>카페 / 베이커리</option>
-                  <option>식당 / 주점</option>
-                  <option>뷰티 / 스파</option>
-                  <option>공방 / 클래스</option>
-                  <option>소매 / 편집숍</option>
-                  <option>기타 로컬 사업장</option>
-                </select>
+                사업장 종류
+                <input id="businessType" type="text" placeholder="예: 강릉 해수욕장 근처 모던한 호텔" />
               </label>
               <label>
                 지역 / 공간 분위기
@@ -114,29 +106,16 @@
 
           <section class="step-panel" data-step="1" aria-labelledby="upload-title">
             <div class="section-heading">
-              <h3 id="upload-title">로고와 참고 이미지</h3>
-              <p>로고, 공간 사진, 상품 사진, 기존 홍보물을 올리면 프롬프트의 브랜드·구도·질감 기준으로 반영합니다.</p>
+              <h3 id="upload-title">참고 이미지</h3>
+              <p>공간 사진, 상품 사진, 기존 홍보물을 올리면 프롬프트의 브랜드·구도·질감 기준으로 반영합니다.</p>
             </div>
 
             <div class="upload-grid">
-              <label class="upload-box logo-upload">
-                <input id="logoInput" type="file" accept="image/*" />
-                <span>로고 파일 선택</span>
-                <small>PNG, JPG, WEBP 권장</small>
-              </label>
               <label class="upload-box">
                 <input id="imageInput" type="file" accept="image/*" multiple />
                 <span>참고 이미지 선택</span>
                 <small>공간, 상품, 기존 홍보물</small>
               </label>
-            </div>
-
-            <div class="logo-preview-wrap" id="logoPreviewWrap">
-              <div class="logo-preview empty" id="logoPreview">LOGO</div>
-              <div>
-                <strong>로고 확인</strong>
-                <p>로고를 올리면 프롬프트에 로고 배치, 비율, 왜곡 금지 조건을 자동으로 포함합니다.</p>
-              </div>
             </div>
 
             <div class="preview-grid" id="previewGrid" aria-live="polite"></div>
@@ -155,21 +134,45 @@
                   <h4>굿즈</h4>
                 </div>
                 <div class="goal-grid compact">
-                  <button type="button" class="goal-card selected" data-category="굿즈" data-layout="sticker">
-                    <strong>스티커</strong>
-                    <span>로고와 대표 문장 중심</span>
+                  <button type="button" class="goal-card selected" data-category="굿즈" data-layout="pen">
+                    <strong>볼펜</strong>
+                    <span>저단가 대량 배포</span>
                   </button>
-                  <button type="button" class="goal-card" data-category="굿즈" data-layout="postcard">
-                    <strong>엽서</strong>
-                    <span>공간 감성과 메시지</span>
+                  <button type="button" class="goal-card selected" data-category="굿즈" data-layout="tumbler">
+                    <strong>텀블러</strong>
+                    <span>카페·호텔 만족도 굿즈</span>
                   </button>
-                  <button type="button" class="goal-card" data-category="굿즈" data-layout="keyring">
-                    <strong>키링</strong>
-                    <span>작고 선명한 마크형</span>
+                  <button type="button" class="goal-card" data-category="굿즈" data-layout="towel">
+                    <strong>수건</strong>
+                    <span>숙소·스파 실사용 품목</span>
                   </button>
-                  <button type="button" class="goal-card" data-category="굿즈" data-layout="mug">
+                  <button type="button" class="goal-card" data-category="굿즈" data-layout="umbrella">
+                    <strong>우산</strong>
+                    <span>장기 노출 판촉물</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="굿즈" data-layout="ecobag">
+                    <strong>에코백</strong>
+                    <span>브랜드 노출형 굿즈</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="굿즈" data-layout="wetwipe">
+                    <strong>물티슈</strong>
+                    <span>생활 밀착 배포용</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="굿즈" data-layout="battery">
+                    <strong>보조배터리</strong>
+                    <span>프리미엄 실용 굿즈</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="굿즈" data-layout="usb">
+                    <strong>USB 메모리</strong>
+                    <span>기업·행사용 품목</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="굿즈" data-layout="mugcup">
                     <strong>머그컵</strong>
-                    <span>일상 사용 굿즈</span>
+                    <span>매장·숙소 기념품</span>
+                  </button>
+                  <button type="button" class="goal-card" data-category="굿즈" data-layout="diary">
+                    <strong>다이어리/달력</strong>
+                    <span>연말·장기 노출용</span>
                   </button>
                 </div>
               </article>
