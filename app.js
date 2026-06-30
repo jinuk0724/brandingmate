@@ -4,6 +4,7 @@ const fields = {
   locationMood: document.querySelector("#locationMood"),
   audience: document.querySelector("#audience"),
   strengths: document.querySelector("#strengths"),
+  customGoodsInput: document.querySelector("#customGoodsInput"),
 };
 
 const stepPanels = [...document.querySelectorAll(".step-panel")];
@@ -14,7 +15,6 @@ const imageInput = document.querySelector("#imageInput");
 const previewGrid = document.querySelector("#previewGrid");
 const prevButton = document.querySelector("#prevButton");
 const nextButton = document.querySelector("#nextButton");
-const generateButton = document.querySelector("#generateButton");
 const copyButton = document.querySelector("#copyButton");
 const resetButton = document.querySelector("#resetButton");
 const logoutButton = document.querySelector("#logoutButton");
@@ -120,17 +120,29 @@ function updateStep(step) {
   stepTitle.textContent = stepTitles[currentStep];
   prevButton.disabled = currentStep === 0;
   nextButton.classList.toggle("hidden", currentStep === stepPanels.length - 1);
-  generateButton.classList.toggle("hidden", currentStep !== stepPanels.length - 1);
   copyButton.classList.toggle("hidden", currentStep !== stepPanels.length - 1);
 }
 
 function getSelectedGoals() {
-  return [...document.querySelectorAll(".goal-card.selected")].map((card) => ({
+  const selectedGoals = [...document.querySelectorAll(".goal-card.selected")].map((card) => ({
     category: card.dataset.category,
     layout: card.dataset.layout,
     title: card.querySelector("strong").textContent.trim(),
     note: card.querySelector("span").textContent.trim(),
   }));
+
+  const customGoods = fields.customGoodsInput.value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((title) => ({
+      category: "굿즈",
+      layout: "custom",
+      title,
+      note: "직접 입력한 굿즈",
+    }));
+
+  return [...selectedGoals, ...customGoods];
 }
 
 function getBrandInput() {
@@ -383,8 +395,6 @@ nextButton.addEventListener("click", () => {
   updateStep(currentStep + 1);
 });
 
-generateButton.addEventListener("click", generateAll);
-
 copyButton.addEventListener("click", async () => {
   if (outputs.brandLanguage.classList.contains("empty")) {
     generateAll();
@@ -408,7 +418,10 @@ resetButton.addEventListener("click", () => {
   });
 
   document.querySelectorAll(".goal-card").forEach((card, index) => {
-    card.classList.toggle("selected", ["pen", "tumbler", "guide", "review", "poster", "social"].includes(card.dataset.layout));
+    card.classList.toggle(
+      "selected",
+      ["handfan", "cooltowel", "coolbag", "tumbler", "guide", "review", "poster", "social"].includes(card.dataset.layout),
+    );
   });
 
   uploadedImages.forEach((image) => URL.revokeObjectURL(image.url));
