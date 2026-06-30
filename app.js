@@ -51,6 +51,12 @@ async function sha256(value) {
   return [...new Uint8Array(hashBuffer)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
+function normalizePassword(value) {
+  return value
+    .trim()
+    .replace(/[０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 0xfee0));
+}
+
 function setAccess(isAllowed) {
   authScreen.classList.toggle("hidden", isAllowed);
   appShell.classList.toggle("locked", !isAllowed);
@@ -65,7 +71,7 @@ function setAccess(isAllowed) {
 
 async function handleAuth(event) {
   event.preventDefault();
-  const password = passwordInput.value.trim();
+  const password = normalizePassword(passwordInput.value);
 
   if (!password) {
     authMessage.textContent = "비밀번호를 입력해주세요.";
