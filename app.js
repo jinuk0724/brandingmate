@@ -25,7 +25,7 @@ const passwordInput = document.querySelector("#passwordInput");
 const authMessage = document.querySelector("#authMessage");
 const toast = document.querySelector("#toast");
 
-const PASSWORD_HASH = "c192baf4ace6b7584fbd0f046f692186bc9405b37a48a5c7e3f4ce6ae5bae55e";
+const PASSWORD_HASH = "dff7d1ad24e683a77f6713e1bb10770ff223ed4f5b17edc0df3ddd7207c8475d";
 const ACCESS_KEY = "brandingmate_access_granted";
 
 const outputs = {
